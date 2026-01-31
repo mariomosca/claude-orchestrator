@@ -362,7 +362,7 @@ Don't want to write YAML manually? Use the **cto-generate** skill to have Claude
 
 ```bash
 mkdir -p ~/.claude/skills/cto-generate
-curl -o ~/.claude/skills/cto-generate/instructions.md \
+curl -o ~/.claude/skills/cto-generate/SKILL.md \
   https://raw.githubusercontent.com/mariomosca/claude-orchestrator/main/skills/cto-generate.md
 ```
 
@@ -370,7 +370,7 @@ curl -o ~/.claude/skills/cto-generate/instructions.md \
 
 ```bash
 mkdir -p .claude/skills/cto-generate
-curl -o .claude/skills/cto-generate/instructions.md \
+curl -o .claude/skills/cto-generate/SKILL.md \
   https://raw.githubusercontent.com/mariomosca/claude-orchestrator/main/skills/cto-generate.md
 ```
 
