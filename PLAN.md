@@ -17,11 +17,16 @@ Gestire task su multipli progetti da un punto centrale, con:
 
 | Feature | Doc | Status |
 |---------|-----|--------|
+| YAML Parser | src/engine/parser.ts | ✅ Done |
+| DAG Resolver | src/engine/dag.ts | ✅ Done |
+| Task Runner | src/engine/runner.ts | ✅ Done |
+| Queue Manager | src/engine/queue.ts | ✅ Done |
+| State Persistence | src/engine/state.ts | ✅ Done |
+| CLI | src/cli.ts | ✅ Done |
 | Escalation Flow | [docs/features/escalation-flow.md](docs/features/escalation-flow.md) | 📋 Designed |
 | Project Context | [docs/features/project-context.md](docs/features/project-context.md) | 📋 Designed |
-| Agent Guardrails | [docs/features/agent-guardrails.md](docs/features/agent-guardrails.md) | 📋 Designed |
-| TUI Dashboard | TODO | ⏳ Pending |
-| YAML Format | In this file | 📋 Designed |
+| Agent Guardrails | [docs/features/agent-guardrails.md](docs/features/agent-guardrails.md) | ✅ Implemented in runner.ts |
+| TUI Dashboard | TODO | ⏳ Next |
 
 ## Tech Stack
 
@@ -724,10 +729,13 @@ npx claude-orchestrator status state/2026-01-31-sprint.state.json
 - [x] Project setup (package.json, tsconfig)
 - [x] TypeScript interfaces
 - [x] Feature documentation
-- [ ] YAML parser + DAG resolver
-- [ ] TaskRunner con Claude SDK
+- [x] YAML parser + validation
+- [x] DAG resolver (topological sort, levels)
+- [x] TaskRunner con Claude SDK + subprocess fallback
+- [x] Queue manager (concurrency, events)
+- [x] State persistence (JSON)
+- [x] CLI (run, resume, validate, status)
 - [ ] Basic TUI (3 pane layout)
-- [ ] State persistence (JSON)
 - [ ] Basic keyboard handling
 
 ### v0.2 - Escalation & Context

@@ -3,7 +3,7 @@
 import { parseArgs } from 'util';
 import { existsSync } from 'fs';
 import { resolve } from 'path';
-import { loadTaskFile, validateBatch, type ParsedTask } from './engine/parser.js';
+import { loadTaskFile, validateBatch, type ParsedTask, type ParsedBatch } from './engine/parser.js';
 import { analyzeDAG } from './engine/dag.js';
 import { loadBatchState, getBatchStats } from './engine/state.js';
 import { QueueManager, resumeBatch } from './engine/queue.js';
@@ -22,10 +22,12 @@ Usage:
 Options:
   --max-concurrent <n>  Override max concurrent tasks
   --dry-run             Parse and validate only
+  --tui                 Use terminal UI instead of log output
   --help                Show this help
 
 Examples:
   claude-orchestrator run tasks/morning-sprint.yaml
+  claude-orchestrator run tasks/sprint.yaml --tui
   claude-orchestrator resume state/2026-01-31-sprint.state.json
   claude-orchestrator validate tasks/example.yaml
 `;
@@ -36,6 +38,7 @@ async function main() {
     options: {
       'max-concurrent': { type: 'string' },
       'dry-run': { type: 'boolean', default: false },
+      'tui': { type: 'boolean', default: false },
       'help': { type: 'boolean', short: 'h', default: false }
     }
   });
@@ -119,13 +122,41 @@ async function runCommand(yamlPath: string, options: Record<string, unknown>) {
     return;
   }
 
-  console.log('\n--- Starting Execution ---\n');
-
   const manager = new QueueManager(batch, yamlPath, {
     maxConcurrent: options['max-concurrent']
       ? parseInt(options['max-concurrent'] as string, 10)
       : undefined
   });
+
+  // TUI mode
+  if (options['tui']) {
+    await runWithTUI(manager, batch);
+    return;
+  }
+
+  // Console mode
+  await runWithConsole(manager);
+}
+
+async function runWithTUI(manager: QueueManager, batch: ParsedBatch) {
+  const { renderApp } = await import('./App.js');
+
+  const { waitUntilExit } = renderApp(manager, batch);
+
+  // Start the batch processing
+  manager.start().catch((err) => {
+    console.error('Batch execution error:', err);
+  });
+
+  // Wait for TUI to exit
+  await waitUntilExit();
+
+  // Ensure state is saved
+  await manager.saveState();
+}
+
+async function runWithConsole(manager: QueueManager) {
+  console.log('\n--- Starting Execution ---\n');
 
   // Setup event handlers
   manager.on('task_started', (taskId) => {
