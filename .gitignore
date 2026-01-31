@@ -4,10 +4,12 @@ node_modules/
 # Build output
 dist/
 
-# State files
-state/
+# State files (keep .gitkeep)
+state/*.state.json
+state/*.report.md
 
-# Logs
+# Logs (keep .gitkeep)
+logs/
 *.log
 
 # OS
