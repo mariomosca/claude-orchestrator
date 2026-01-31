@@ -352,6 +352,49 @@ Press `S` to view detailed cost breakdown:
 
 ---
 
+## Claude Code Integration
+
+Don't want to write YAML manually? Use the **cto-generate** skill to have Claude Code create task files for you.
+
+### Install the Skill
+
+**Global (recommended):**
+
+```bash
+mkdir -p ~/.claude/skills/cto-generate
+curl -o ~/.claude/skills/cto-generate/instructions.md \
+  https://raw.githubusercontent.com/mariomosca/claude-orchestrator/main/skills/cto-generate.md
+```
+
+**Per-project:**
+
+```bash
+mkdir -p .claude/skills/cto-generate
+curl -o .claude/skills/cto-generate/instructions.md \
+  https://raw.githubusercontent.com/mariomosca/claude-orchestrator/main/skills/cto-generate.md
+```
+
+### Usage
+
+In Claude Code, invoke the skill:
+
+```
+/cto-generate
+```
+
+Claude will:
+1. Ask what you want to accomplish
+2. Break it down into tasks
+3. Generate a ready-to-run YAML file
+
+**Quick mode** — skip the interview:
+
+```
+/cto-generate quick: fix auth bug, add logout button, update tests
+```
+
+---
+
 ## Roadmap
 
 - [x] **v0.1** — MVP with TUI and basic execution
