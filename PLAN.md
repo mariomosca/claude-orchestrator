@@ -773,6 +773,17 @@ npx claude-orchestrator status state/2026-01-31-sprint.state.json
 - [x] Error categorization (timeout, budget, network, etc.)
 - [x] DetailsPane con error suggestions
 
+### v0.5 - Open Source Release ✅ COMPLETATO (31 Gen 2026)
+- [x] README.md completo (features, TUI preview, YAML schema, shortcuts)
+- [x] LICENSE MIT
+- [x] GitHub repo: github.com/mariomosca/claude-orchestrator
+- [x] Demo video registrato e convertito in GIF
+- [x] GIF embedded nel README
+- [x] npm package: `claude-task-orchestrator` v0.4.0
+- [x] CLI alias: `cto` (short) + `claude-task-orchestrator` (full)
+- [x] CLAUDE.md con context per future sessioni
+- [x] Valutazione GitHub Pages (skip per ora - README sufficiente)
+
 ### v1.0 - Production Ready
 - [ ] Full keyboard navigation
 - [ ] Documentation completa
