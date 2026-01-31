@@ -1,0 +1,46 @@
+name: Test Batch
+maxConcurrent: 2
+defaultBudget: 1.0
+
+globalInstructions: |
+  Test run - use mock responses only.
+
+tasks:
+  - id: task-1
+    project: TestProject
+    cwd: ~/Desktop/work-hub
+    prompt: "Echo 'Hello from task 1'"
+    model: haiku
+    tools:
+      - Bash
+
+  - id: task-2
+    project: TestProject
+    cwd: ~/Desktop/work-hub
+    prompt: "Echo 'Hello from task 2'"
+    model: haiku
+    dependsOn:
+      - task-1
+    tools:
+      - Bash
+
+  - id: task-3
+    project: TestProject
+    cwd: ~/Desktop/work-hub
+    prompt: "Echo 'Hello from task 3 - parallel with task-2'"
+    model: haiku
+    dependsOn:
+      - task-1
+    tools:
+      - Bash
+
+  - id: task-final
+    project: TestProject
+    cwd: ~/Desktop/work-hub
+    prompt: "Echo 'All done!'"
+    model: haiku
+    dependsOn:
+      - task-2
+      - task-3
+    tools:
+      - Bash

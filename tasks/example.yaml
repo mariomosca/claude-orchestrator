@@ -1,0 +1,51 @@
+# Example task batch
+# Run with: npx claude-orchestrator run tasks/example.yaml
+
+name: "Example Sprint"
+maxConcurrent: 3
+defaultBudget: 3.00
+defaultTools: [Read, Edit, Glob, Grep]
+
+tasks:
+  # Backend task - runs first
+  - id: api-fix
+    project: my-project
+    cwd: ~/Desktop/Projects/01-Revenue-Active/my-project
+    prompt: |
+      Fix the authentication timeout bug in /api/auth/refresh.
+      The token refresh is failing after 30 minutes.
+    tools: [Read, Edit, Bash, Grep]
+    budget: 3.00
+
+  # Frontend task - depends on backend
+  - id: ui-update
+    project: my-project
+    cwd: ~/Desktop/Projects/01-Revenue-Active/my-project
+    prompt: |
+      Update the error UI to show a user-friendly message
+      when the refresh token expires. Check the new API response
+      format from the previous fix.
+    tools: [Read, Edit]
+    dependsOn: [api-fix]
+    budget: 2.00
+
+  # Deploy task - depends on UI
+  - id: deploy
+    project: my-project
+    cwd: ~/Desktop/Projects/01-Revenue-Active/my-project
+    prompt: |
+      Run the test suite with `npm test`.
+      If all tests pass, deploy to production with `npm run deploy`.
+    tools: [Bash]
+    dependsOn: [ui-update]
+    budget: 1.00
+
+  # Independent task - runs in parallel with api-fix
+  - id: docs-update
+    project: my-project
+    cwd: ~/Desktop/Projects/01-Revenue-Active/my-project
+    prompt: |
+      Update the README.md to document the new authentication
+      refresh behavior.
+    tools: [Read, Edit]
+    budget: 1.00
