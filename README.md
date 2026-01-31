@@ -35,30 +35,7 @@ Claude Orchestrator runs multiple AI-powered tasks across different projects fro
 
 ## TUI Preview
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         Plan Mode                                │
-├─────────────────────────────────────────────────────────────────┤
-│  [x] journalowl-api-fix      Analyzing...                       │
-│  [x] journalowl-ui-update    Fix auth error UI                  │
-│  [ ] kanv-export-feature     Add PDF export with jsPDF          │
-│                                                                 │
-│  [A] Approve  [X] Toggle  [Q] Cancel                            │
-└─────────────────────────────────────────────────────────────────┘
-
-┌─────────────┬─────────────────────┬─────────────────────────────┐
-│   Queue     │   Running           │        Log                  │
-│             │                     │                             │
-│  ▶ task-1   │  ⟳ task-3          │  ✓ task-5  $0.12  45s       │
-│    task-2   │    journalowl       │  ✓ task-6  $0.08  23s       │
-│    task-4   │    "fixing auth..." │  ✗ task-7  error            │
-│             │    $0.04 | 23s      │                             │
-├─────────────┴─────────────────────┴─────────────────────────────┤
-│  RUNNING | 3/7 done | Cost: $0.24 (avg: $0.08) | 2m 15s         │
-├─────────────────────────────────────────────────────────────────┤
-│ [Tab] Switch  [Space] Pause  [Enter] Details  [L] Log  [S] Stats│
-└─────────────────────────────────────────────────────────────────┘
-```
+![Claude Orchestrator Demo](demo.gif)
 
 ---
 
