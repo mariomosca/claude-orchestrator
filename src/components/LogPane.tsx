@@ -8,17 +8,26 @@ interface LogPaneProps {
   tasks: Array<ParsedTask & { state: TaskState }>;
   maxItems?: number;
   focusedIndex?: number;
+  isFocusedPane?: boolean;
 }
 
-export const LogPane: React.FC<LogPaneProps> = ({ tasks, maxItems = 10, focusedIndex }) => {
+export const LogPane: React.FC<LogPaneProps> = ({ tasks, maxItems = 10, focusedIndex, isFocusedPane }) => {
   const completedTasks = tasks
     .filter(t => t.state?.status === 'completed' || t.state?.status === 'failed' || t.state?.status === 'cancelled')
     .slice(-maxItems);
 
   return (
-    <Box flexDirection="column" borderStyle="single" borderColor="gray" paddingX={1} flexGrow={1}>
+    <Box
+      flexDirection="column"
+      borderStyle={isFocusedPane ? 'double' : 'single'}
+      borderColor={isFocusedPane ? 'white' : 'gray'}
+      paddingX={1}
+      flexGrow={1}
+    >
       <Box marginBottom={1}>
-        <Text bold>Log</Text>
+        <Text bold inverse={isFocusedPane}>
+          {isFocusedPane ? ' Log ' : 'Log'}
+        </Text>
       </Box>
 
       {completedTasks.length === 0 ? (

@@ -8,15 +8,24 @@ import { formatCost, formatDuration } from '../utils/format.js';
 interface RunningPaneProps {
   tasks: Array<ParsedTask & { state: TaskState }>;
   focusedIndex?: number;
+  isFocusedPane?: boolean;
 }
 
-export const RunningPane: React.FC<RunningPaneProps> = ({ tasks, focusedIndex }) => {
+export const RunningPane: React.FC<RunningPaneProps> = ({ tasks, focusedIndex, isFocusedPane }) => {
   const runningTasks = tasks.filter(t => t.state?.status === 'running');
 
   return (
-    <Box flexDirection="column" borderStyle="single" borderColor="green" paddingX={1} minWidth={30}>
+    <Box
+      flexDirection="column"
+      borderStyle={isFocusedPane ? 'double' : 'single'}
+      borderColor={isFocusedPane ? 'greenBright' : 'green'}
+      paddingX={1}
+      minWidth={30}
+    >
       <Box marginBottom={1}>
-        <Text bold color="green">Running ({runningTasks.length})</Text>
+        <Text bold color="green" inverse={isFocusedPane}>
+          {isFocusedPane ? ' Running ' : 'Running'} ({runningTasks.length})
+        </Text>
       </Box>
 
       {runningTasks.length === 0 ? (

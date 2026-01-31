@@ -751,18 +751,28 @@ npx claude-orchestrator status state/2026-01-31-sprint.state.json
 - [x] Stack detection (detectStack in context.ts)
 - [x] CLAUDE.md parsing (loadClaudeMd in context.ts)
 - [x] Context injection in prompts (buildContextPrompt)
+- [x] Visual highlight pane attivo (double border, inverse title)
+- [x] HelpBar con [Tab] Switch Pane
 
-### v0.3 - Polish
-- [ ] Multi-model support (Haiku/Sonnet)
-- [ ] Log storage + viewer
-- [ ] Retry failed tasks
+### v0.3 - Plan Mode ⏳ IN PROGRESS
+- [ ] PlanningPane TUI component (mostra task list pre-esecuzione)
+- [ ] AI pre-analysis con Haiku (spiega cosa farà ogni task)
+- [ ] Planning state in App (planning → running → completed)
+- [ ] Approve action ([Enter] o [A] per avviare esecuzione)
+- [ ] Edit task action ([E] per modificare prompt)
+- [ ] Exclude task action ([X] per escludere task)
+- [ ] Task list selection (scegli tra YAML in tasks/)
+
+### v0.4 - Polish
+- [ ] Log storage + viewer migliorato
+- [ ] Retry failed tasks (R funzionante)
 - [ ] Better error handling
+- [ ] Cost analytics
 
 ### v1.0 - Production Ready
 - [ ] Full keyboard navigation
-- [ ] Task detail modal
-- [ ] Cost analytics
-- [ ] Documentation
+- [ ] Documentation completa
+- [ ] Test suite
 
 ### v2.0 - Future
 - [ ] Notifications (Slack/Discord)

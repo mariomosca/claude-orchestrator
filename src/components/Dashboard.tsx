@@ -178,14 +178,17 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <TaskQueue
           tasks={tasksWithState}
           focusedIndex={focusedPane === 'queue' ? focusedIndex : undefined}
+          isFocusedPane={focusedPane === 'queue'}
         />
         <RunningPane
           tasks={tasksWithState.filter(t => t.state) as Array<ParsedTask & { state: TaskState }>}
           focusedIndex={focusedPane === 'running' ? focusedIndex : undefined}
+          isFocusedPane={focusedPane === 'running'}
         />
         <LogPane
           tasks={tasksWithState.filter(t => t.state) as Array<ParsedTask & { state: TaskState }>}
           focusedIndex={focusedPane === 'log' ? focusedIndex : undefined}
+          isFocusedPane={focusedPane === 'log'}
         />
       </Box>
 

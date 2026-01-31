@@ -6,17 +6,25 @@ import type { ParsedTask } from '../engine/parser.js';
 interface TaskQueueProps {
   tasks: Array<ParsedTask & { state?: TaskState }>;
   focusedIndex?: number;
+  isFocusedPane?: boolean;
 }
 
-export const TaskQueue: React.FC<TaskQueueProps> = ({ tasks, focusedIndex }) => {
+export const TaskQueue: React.FC<TaskQueueProps> = ({ tasks, focusedIndex, isFocusedPane }) => {
   const pendingTasks = tasks.filter(t =>
     !t.state || t.state.status === 'pending' || t.state.status === 'blocked'
   );
 
   return (
-    <Box flexDirection="column" borderStyle="single" borderColor="gray" paddingX={1}>
+    <Box
+      flexDirection="column"
+      borderStyle={isFocusedPane ? 'double' : 'single'}
+      borderColor={isFocusedPane ? 'cyan' : 'gray'}
+      paddingX={1}
+    >
       <Box marginBottom={1}>
-        <Text bold color="cyan">Queue ({pendingTasks.length})</Text>
+        <Text bold color="cyan" inverse={isFocusedPane}>
+          {isFocusedPane ? ' Queue ' : 'Queue'} ({pendingTasks.length})
+        </Text>
       </Box>
 
       {pendingTasks.length === 0 ? (

@@ -6,3 +6,5 @@ export { StatusBar } from './StatusBar.js';
 export { HelpBar } from './HelpBar.js';
 export { DetailsPane } from './DetailsPane.js';
 export { EscalationPane } from './EscalationPane.js';
+export { PlanningPane } from './PlanningPane.js';
+export type { TaskPlan } from './PlanningPane.js';

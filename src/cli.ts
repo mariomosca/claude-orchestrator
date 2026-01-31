@@ -24,12 +24,13 @@ Usage:
 Options:
   --max-concurrent <n>  Override max concurrent tasks
   --dry-run             Parse and validate only
-  --tui                 Use terminal UI instead of log output
+  --tui                 Use terminal UI (includes Plan Mode)
+  --skip-plan           Skip Plan Mode, execute immediately
   --help                Show this help
 
 Examples:
-  claude-orchestrator run tasks/morning-sprint.yaml
-  claude-orchestrator run tasks/sprint.yaml --tui
+  claude-orchestrator run tasks/morning-sprint.yaml --tui
+  claude-orchestrator run tasks/sprint.yaml --tui --skip-plan
   claude-orchestrator resume state/2026-01-31-sprint.state.json
   claude-orchestrator results state/2026-01-31-sprint.state.json
   claude-orchestrator report state/2026-01-31-sprint.state.json
@@ -42,6 +43,7 @@ async function main() {
       'max-concurrent': { type: 'string' },
       'dry-run': { type: 'boolean', default: false },
       'tui': { type: 'boolean', default: false },
+      'skip-plan': { type: 'boolean', default: false },
       'help': { type: 'boolean', short: 'h', default: false }
     }
   });
@@ -141,7 +143,7 @@ async function runCommand(yamlPath: string, options: Record<string, unknown>) {
 
   // TUI mode
   if (options['tui']) {
-    await runWithTUI(manager, batch);
+    await runWithTUI(manager, batch, { skipPlanning: !!options['skip-plan'] });
     return;
   }
 
@@ -149,15 +151,24 @@ async function runCommand(yamlPath: string, options: Record<string, unknown>) {
   await runWithConsole(manager);
 }
 
-async function runWithTUI(manager: QueueManager, batch: ParsedBatch) {
+interface TUIOptions {
+  skipPlanning?: boolean;
+}
+
+async function runWithTUI(manager: QueueManager, batch: ParsedBatch, options: TUIOptions = {}) {
   const { renderApp } = await import('./App.js');
 
-  const { waitUntilExit } = renderApp(manager, batch);
-
-  // Start the batch processing
-  manager.start().catch((err) => {
-    console.error('Batch execution error:', err);
+  const { waitUntilExit } = renderApp(manager, batch, {
+    skipPlanning: options.skipPlanning
   });
+
+  // If skipping planning, start immediately
+  // Otherwise, App.tsx will start after user approves
+  if (options.skipPlanning) {
+    manager.start().catch((err) => {
+      console.error('Batch execution error:', err);
+    });
+  }
 
   // Wait for TUI to exit
   await waitUntilExit();

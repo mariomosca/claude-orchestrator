@@ -6,6 +6,7 @@ interface HelpBarProps {
 }
 
 const shortcuts = [
+  { key: 'Tab', action: 'Switch Pane' },
   { key: 'Space', action: 'Pause/Resume' },
   { key: 'Enter', action: 'Details' },
   { key: 'R', action: 'Retry' },

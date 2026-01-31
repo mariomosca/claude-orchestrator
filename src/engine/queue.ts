@@ -109,6 +109,28 @@ export class QueueManager extends EventEmitter {
   }
 
   /**
+   * Start processing with a filtered set of tasks (from Plan Mode)
+   */
+  async startWithTasks(tasks: ParsedTask[]): Promise<BatchState> {
+    // Update batch with filtered tasks
+    this.batch = {
+      ...this.batch,
+      tasks
+    };
+
+    // Update state to only include these tasks
+    const includedIds = new Set(tasks.map(t => t.id));
+    for (const taskId of Object.keys(this.state.tasks)) {
+      if (!includedIds.has(taskId)) {
+        delete this.state.tasks[taskId];
+      }
+    }
+
+    // Start normally
+    return this.start();
+  }
+
+  /**
    * Main processing loop
    */
   private async processLoop(): Promise<void> {

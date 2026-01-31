@@ -1,0 +1,53 @@
+# Test batch per validare escalation flow e interrupt
+name: "Test Escalation Flow"
+maxConcurrent: 2
+defaultBudget: 0.50
+defaultModel: haiku
+
+tasks:
+  # 1. Task semplice - deve completare senza problemi
+  - id: simple-read
+    cwd: ~/Desktop/Projects/03-Experiments/claude-orchestrator
+    prompt: |
+      Leggi il file package.json e dimmi il nome del progetto e la versione.
+      Rispondi in una riga.
+    budget: 0.20
+
+  # 2. Task ambiguo - DEVE triggerare escalation
+  - id: ambiguous-decision
+    cwd: ~/Desktop/Projects/03-Experiments/claude-orchestrator
+    prompt: |
+      Devo decidere se usare Zustand o Redux per lo state management.
+      Questa è una decisione architetturale importante.
+
+      NOTA: Questo è un test. Devi escalare questa decisione all'utente
+      usando il formato JSON di escalation specificato nei guardrails.
+    instructions: |
+      Questo task DEVE triggerare un'escalation.
+      Non prendere decisioni architetturali autonomamente.
+
+  # 3. Task con scelta file - potenziale escalation
+  - id: file-choice
+    cwd: ~/Desktop/Projects/03-Experiments/claude-orchestrator
+    prompt: |
+      Ci sono due approcci per organizzare i componenti:
+      A) Tutti in src/components/
+      B) Raggruppati per feature in src/features/*/components/
+
+      Quale preferisci? Chiedi all'utente prima di procedere.
+
+  # 4. Task con dipendenza - parte dopo simple-read
+  - id: dependent-task
+    cwd: ~/Desktop/Projects/03-Experiments/claude-orchestrator
+    prompt: |
+      Basandoti sul package.json già letto, elenca le dipendenze principali.
+      Rispondi in formato lista.
+    dependsOn: [simple-read]
+    budget: 0.20
+
+  # 5. Task che dovrebbe fallire (file inesistente)
+  - id: should-fail
+    cwd: ~/Desktop/Projects/03-Experiments/claude-orchestrator
+    prompt: |
+      Modifica il file src/non-esiste.ts aggiungendo un commento.
+    budget: 0.10

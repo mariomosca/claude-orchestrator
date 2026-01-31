@@ -50,3 +50,11 @@ export {
   loadGlobalAvoidList,
   buildContextPrompt
 } from './context.js';
+
+// Analyzer
+export {
+  analyzeTask,
+  analyzeTasks,
+  estimateAnalysisCost
+} from './analyzer.js';
+export type { TaskAnalysis } from './analyzer.js';
