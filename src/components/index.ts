@@ -5,3 +5,4 @@ export { LogPane } from './LogPane.js';
 export { StatusBar } from './StatusBar.js';
 export { HelpBar } from './HelpBar.js';
 export { DetailsPane } from './DetailsPane.js';
+export { EscalationPane } from './EscalationPane.js';

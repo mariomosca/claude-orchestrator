@@ -6,29 +6,35 @@ import { LogPane } from './LogPane.js';
 import { StatusBar } from './StatusBar.js';
 import { HelpBar } from './HelpBar.js';
 import { DetailsPane } from './DetailsPane.js';
+import { EscalationPane } from './EscalationPane.js';
 import type { BatchState, TaskState } from '../types/task.js';
 import type { ParsedTask } from '../engine/parser.js';
+import type { EscalationRequest, EscalationResponse } from '../engine/runner.js';
 
 interface DashboardProps {
   tasks: ParsedTask[];
   state: BatchState;
   isPaused: boolean;
+  escalation: EscalationRequest | null;
   onPause: () => void;
   onResume: () => void;
   onCancel: (taskId: string) => void;
   onRetry: (taskId: string) => void;
   onQuit: () => void;
+  onEscalationResponse: (response: EscalationResponse) => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
   tasks,
   state,
   isPaused,
+  escalation,
   onPause,
   onResume,
   onCancel,
   onRetry,
   onQuit,
+  onEscalationResponse,
 }) => {
   const { exit } = useApp();
   const [focusedPane, setFocusedPane] = React.useState<'queue' | 'running' | 'log'>('running');
@@ -138,6 +144,19 @@ export const Dashboard: React.FC<DashboardProps> = ({
       return;
     }
   });
+
+  // If escalation is pending, show it
+  if (escalation) {
+    return (
+      <Box flexDirection="column" height="100%">
+        <EscalationPane
+          request={escalation}
+          onRespond={onEscalationResponse}
+        />
+        <StatusBar state={state} isPaused={isPaused} />
+      </Box>
+    );
+  }
 
   // If details modal is open, show it instead of the main view
   if (selectedTask) {

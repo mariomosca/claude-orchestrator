@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import type { TaskState } from '../types/task.js';
+import type { ProjectContext } from '../types/context.js';
 import type { ParsedTask } from './parser.js';
 import type {
   TaskStartedEvent,
@@ -9,6 +10,7 @@ import type {
   TaskFailedEvent
 } from '../types/events.js';
 import { appendToLog, saveTaskResult } from './state.js';
+import { getOrCreateProjectContext, buildContextPrompt, addLearning, addDecision } from './context.js';
 
 // NOTE: This imports the Claude Agent SDK
 // If not available, we'll need to use subprocess fallback
@@ -80,6 +82,22 @@ export class TaskRunner extends EventEmitter {
     let cost = 0;
     let result = '';
 
+    // Load project context if enabled
+    let projectContext: ProjectContext | undefined;
+    if (task.loadProjectContext !== false) {
+      try {
+        projectContext = await getOrCreateProjectContext(task.cwd);
+        await appendToLog(
+          this.batchId,
+          task.id,
+          `Loaded context: ${projectContext.detected.language}/${projectContext.detected.framework || 'vanilla'}`,
+          this.baseDir
+        );
+      } catch {
+        // Context loading is optional
+      }
+    }
+
     // Emit started event
     this.emit('started', {
       type: 'task:started',
@@ -91,8 +109,8 @@ export class TaskRunner extends EventEmitter {
     await appendToLog(this.batchId, task.id, `Task started: ${task.prompt.slice(0, 100)}...`, this.baseDir);
 
     try {
-      // Build full prompt with guardrails
-      const fullPrompt = this.buildPrompt(task, globalInstructions);
+      // Build full prompt with guardrails and context
+      const fullPrompt = this.buildPrompt(task, globalInstructions, projectContext);
 
       // Execute with Claude SDK
       const queryResult = await this.executeQuery(task, fullPrompt, sessionId);
@@ -174,9 +192,13 @@ export class TaskRunner extends EventEmitter {
   }
 
   /**
-   * Build full prompt with guardrails and instructions
+   * Build full prompt with guardrails, context, and instructions
    */
-  private buildPrompt(task: ParsedTask, globalInstructions?: string): string {
+  private buildPrompt(
+    task: ParsedTask,
+    globalInstructions?: string,
+    projectContext?: ProjectContext
+  ): string {
     const parts: string[] = [];
 
     // Global guardrails
@@ -198,6 +220,11 @@ Per escalare, rispondi SOLO con questo JSON:
 }
 \`\`\`
 `);
+
+    // Project context (if available)
+    if (projectContext) {
+      parts.push(buildContextPrompt(projectContext));
+    }
 
     // Global instructions
     if (globalInstructions) {

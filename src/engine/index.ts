@@ -34,3 +34,19 @@ export type { EscalationRequest, EscalationResponse } from './runner.js';
 // Queue
 export { QueueManager, resumeBatch } from './queue.js';
 export type { QueueManagerOptions, QueueManagerEvents } from './queue.js';
+
+// Context
+export {
+  detectStack,
+  loadClaudeMd,
+  getProjectId,
+  loadProjectContext,
+  saveProjectContext,
+  getOrCreateProjectContext,
+  addLearning,
+  addDecision,
+  addAvoidItem,
+  loadGlobalLearnings,
+  loadGlobalAvoidList,
+  buildContextPrompt
+} from './context.js';

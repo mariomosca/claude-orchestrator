@@ -23,8 +23,8 @@ Gestire task su multipli progetti da un punto centrale, con:
 | Queue Manager | src/engine/queue.ts | ✅ Done |
 | State Persistence | src/engine/state.ts | ✅ Done |
 | CLI | src/cli.ts | ✅ Done |
-| Escalation Flow | [docs/features/escalation-flow.md](docs/features/escalation-flow.md) | 📋 Designed |
-| Project Context | [docs/features/project-context.md](docs/features/project-context.md) | 📋 Designed |
+| Escalation Flow | [docs/features/escalation-flow.md](docs/features/escalation-flow.md) | ✅ Done (TUI + handler) |
+| Project Context | [docs/features/project-context.md](docs/features/project-context.md) | ✅ Done (detection + injection) |
 | Agent Guardrails | [docs/features/agent-guardrails.md](docs/features/agent-guardrails.md) | ✅ Implemented in runner.ts |
 | TUI Dashboard | src/components/ | ✅ Done |
 | Results Command | src/cli.ts | ✅ Done |
@@ -742,11 +742,15 @@ npx claude-orchestrator status state/2026-01-31-sprint.state.json
 - [x] Task details view (Enter to see results)
 - [x] AI-generated batch report
 
-### v0.2 - Escalation & Context ⏳ NEXT
-- [ ] Escalation flow implementation
-- [ ] Project context collection
-- [ ] Agent guardrails injection
-- [ ] Escalation pane in TUI
+### v0.2 - Escalation & Context ✅ COMPLETATO (31 Gen 2026)
+- [x] Escalation flow implementation (runner.ts parseEscalation)
+- [x] Project context collection (engine/context.ts)
+- [x] Agent guardrails injection (runner.ts buildPrompt)
+- [x] Escalation pane in TUI (components/EscalationPane.tsx)
+- [x] Context types (types/context.ts)
+- [x] Stack detection (detectStack in context.ts)
+- [x] CLAUDE.md parsing (loadClaudeMd in context.ts)
+- [x] Context injection in prompts (buildContextPrompt)
 
 ### v0.3 - Polish
 - [ ] Multi-model support (Haiku/Sonnet)
