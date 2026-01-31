@@ -1,12 +1,33 @@
 {
-  "name": "claude-orchestrator",
-  "version": "0.1.0",
+  "name": "claude-task-orchestrator",
+  "version": "0.4.0",
   "description": "TUI multi-project task orchestrator powered by Claude Agent SDK",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "claude-orchestrator": "./dist/cli.js"
+    "claude-task-orchestrator": "./dist/cli.js",
+    "cto": "./dist/cli.js"
   },
+  "keywords": [
+    "claude",
+    "ai",
+    "orchestrator",
+    "tui",
+    "cli",
+    "task-runner",
+    "anthropic",
+    "agent"
+  ],
+  "author": "Mario Mosca",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mariomosca/claude-orchestrator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mariomosca/claude-orchestrator/issues"
+  },
+  "homepage": "https://github.com/mariomosca/claude-orchestrator#readme",
   "scripts": {
     "dev": "tsx src/cli.ts",
     "build": "tsc",

@@ -2,6 +2,7 @@
 
 **Multi-project task orchestrator with TUI, powered by Claude Agent SDK.**
 
+[![npm version](https://img.shields.io/npm/v/claude-task-orchestrator.svg)](https://www.npmjs.com/package/claude-task-orchestrator)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Claude](https://img.shields.io/badge/Claude-Agent%20SDK-CC785C?logo=anthropic&logoColor=white)](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview)
@@ -76,18 +77,23 @@ Claude Orchestrator runs multiple AI-powered tasks across different projects fro
 
 ### Installation
 
+**From npm (recommended):**
+
 ```bash
-# Clone
+npm install -g claude-task-orchestrator
+```
+
+Commands available:
+- `claude-task-orchestrator` (full name)
+- `cto` (short alias)
+
+**From source:**
+
+```bash
 git clone https://github.com/mariomosca/claude-orchestrator.git
 cd claude-orchestrator
-
-# Install dependencies
 npm install
-
-# Build
 npm run build
-
-# Link globally (optional)
 npm link
 ```
 
@@ -132,16 +138,16 @@ tasks:
 
 ```bash
 # Run with TUI (includes Plan Mode)
-claude-orchestrator run tasks/morning-sprint.yaml --tui
+cto run tasks/morning-sprint.yaml --tui
 
 # Skip Plan Mode, execute immediately
-claude-orchestrator run tasks/morning-sprint.yaml --tui --skip-plan
+cto run tasks/morning-sprint.yaml --tui --skip-plan
 
 # Validate without executing
-claude-orchestrator validate tasks/morning-sprint.yaml
+cto validate tasks/morning-sprint.yaml
 
 # Resume interrupted batch
-claude-orchestrator resume state/2026-01-31-morning-sprint.state.json
+cto resume state/2026-01-31-morning-sprint.state.json
 ```
 
 ---
@@ -268,7 +274,7 @@ logs/
 Resume any interrupted batch:
 
 ```bash
-claude-orchestrator resume state/2026-01-31-morning-sprint-a1b2.state.json
+cto resume state/2026-01-31-morning-sprint-a1b2.state.json
 ```
 
 ---
