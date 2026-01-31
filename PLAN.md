@@ -26,7 +26,9 @@ Gestire task su multipli progetti da un punto centrale, con:
 | Escalation Flow | [docs/features/escalation-flow.md](docs/features/escalation-flow.md) | 📋 Designed |
 | Project Context | [docs/features/project-context.md](docs/features/project-context.md) | 📋 Designed |
 | Agent Guardrails | [docs/features/agent-guardrails.md](docs/features/agent-guardrails.md) | ✅ Implemented in runner.ts |
-| TUI Dashboard | TODO | ⏳ Next |
+| TUI Dashboard | src/components/ | ✅ Done |
+| Results Command | src/cli.ts | ✅ Done |
+| AI Report | src/cli.ts | ✅ Done |
 
 ## Tech Stack
 
@@ -725,7 +727,7 @@ npx claude-orchestrator status state/2026-01-31-sprint.state.json
 
 ## Roadmap
 
-### v0.1 - MVP
+### v0.1 - MVP ✅ COMPLETATO (31 Gen 2026)
 - [x] Project setup (package.json, tsconfig)
 - [x] TypeScript interfaces
 - [x] Feature documentation
@@ -734,11 +736,13 @@ npx claude-orchestrator status state/2026-01-31-sprint.state.json
 - [x] TaskRunner con Claude SDK + subprocess fallback
 - [x] Queue manager (concurrency, events)
 - [x] State persistence (JSON)
-- [x] CLI (run, resume, validate, status)
-- [ ] Basic TUI (3 pane layout)
-- [ ] Basic keyboard handling
+- [x] CLI (run, resume, validate, status, results, report)
+- [x] Basic TUI (3 pane layout)
+- [x] Basic keyboard handling (Space, Enter, Tab, Q, R, C, arrows)
+- [x] Task details view (Enter to see results)
+- [x] AI-generated batch report
 
-### v0.2 - Escalation & Context
+### v0.2 - Escalation & Context ⏳ NEXT
 - [ ] Escalation flow implementation
 - [ ] Project context collection
 - [ ] Agent guardrails injection

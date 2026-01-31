@@ -14,10 +14,12 @@ const HELP = `
 claude-orchestrator - Multi-project task orchestrator
 
 Usage:
-  claude-orchestrator run <yaml-file>     Run a task batch
-  claude-orchestrator resume <state-file> Resume interrupted batch
+  claude-orchestrator run <yaml-file>      Run a task batch
+  claude-orchestrator resume <state-file>  Resume interrupted batch
   claude-orchestrator validate <yaml-file> Validate YAML and show DAG
   claude-orchestrator status <state-file>  Show batch status
+  claude-orchestrator results <state-file> Show task results
+  claude-orchestrator report <state-file>  Generate AI summary report
 
 Options:
   --max-concurrent <n>  Override max concurrent tasks
@@ -29,7 +31,8 @@ Examples:
   claude-orchestrator run tasks/morning-sprint.yaml
   claude-orchestrator run tasks/sprint.yaml --tui
   claude-orchestrator resume state/2026-01-31-sprint.state.json
-  claude-orchestrator validate tasks/example.yaml
+  claude-orchestrator results state/2026-01-31-sprint.state.json
+  claude-orchestrator report state/2026-01-31-sprint.state.json
 `;
 
 async function main() {
@@ -80,6 +83,14 @@ async function main() {
 
       case 'status':
         await statusCommand(absolutePath);
+        break;
+
+      case 'results':
+        await resultsCommand(absolutePath);
+        break;
+
+      case 'report':
+        await reportCommand(absolutePath);
         break;
 
       default:
@@ -335,6 +346,118 @@ async function statusCommand(statePath: string) {
     const cost = taskState.cost > 0 ? ` (${formatCost(taskState.cost)})` : '';
     const error = taskState.error ? ` - ${taskState.error}` : '';
     console.log(`  ${icon} ${taskId}${cost}${error}`);
+  }
+}
+
+async function resultsCommand(statePath: string) {
+  const state = await loadBatchState(statePath);
+
+  console.log(`\n=== Batch Results: ${state.batchName} ===\n`);
+
+  for (const [taskId, taskState] of Object.entries(state.tasks) as [string, TaskState][]) {
+    const icon = formatStatus(taskState.status);
+    const cost = taskState.cost > 0 ? formatCost(taskState.cost) : '-';
+    const duration = taskState.completedAt && taskState.startedAt
+      ? formatDuration(new Date(taskState.completedAt).getTime() - new Date(taskState.startedAt).getTime())
+      : '-';
+
+    console.log(`${icon} ${taskId}`);
+    console.log(`   Cost: ${cost} | Duration: ${duration}`);
+
+    if (taskState.result) {
+      console.log(`   Result:`);
+      // Indent result lines
+      const lines = taskState.result.split('\n');
+      for (const line of lines) {
+        console.log(`      ${line}`);
+      }
+    }
+
+    if (taskState.error) {
+      console.log(`   Error: ${taskState.error}`);
+    }
+
+    console.log('');
+  }
+
+  // Summary
+  const stats = getBatchStats(state);
+  console.log(`--- Summary ---`);
+  console.log(`Completed: ${stats.completed}/${stats.total}`);
+  console.log(`Total Cost: ${formatCost(stats.totalCost)}`);
+}
+
+async function reportCommand(statePath: string) {
+  const state = await loadBatchState(statePath);
+  const stats = getBatchStats(state);
+
+  console.log(`Generating AI report for: ${state.batchName}\n`);
+
+  // Build context for AI
+  const taskSummaries = Object.entries(state.tasks).map(([taskId, taskState]) => {
+    const ts = taskState as TaskState;
+    return `- ${taskId} (${ts.status}): ${ts.result || ts.error || 'No output'}`;
+  }).join('\n');
+
+  const prompt = `Genera un report executive summary di questo batch di task completati dall'orchestrator.
+
+Batch: ${state.batchName}
+Status: ${state.status}
+Tasks: ${stats.completed}/${stats.total} completati
+Costo totale: $${stats.totalCost.toFixed(4)}
+Durata: ${state.completedAt ? formatDuration(new Date(state.completedAt).getTime() - new Date(state.startedAt).getTime()) : 'In corso'}
+
+Task Results:
+${taskSummaries}
+
+Scrivi un report in italiano, massimo 200 parole, che:
+1. Riassume cosa è stato fatto
+2. Evidenzia i risultati chiave
+3. Segnala eventuali problemi
+4. Suggerisce next steps se appropriato
+
+Formatta in markdown.`;
+
+  try {
+    const { query } = await import('@anthropic-ai/claude-agent-sdk');
+
+    const result = query({
+      prompt,
+      options: {
+        cwd: process.cwd(),
+        maxBudgetUsd: 0.10,
+        model: 'haiku'
+      }
+    });
+
+    let reportContent = '';
+
+    for await (const msg of result) {
+      if (msg.type === 'result') {
+        // Cast to access result property
+        const resultMsg = msg as { type: 'result'; result?: string };
+        if (resultMsg.result) {
+          reportContent = resultMsg.result;
+        }
+      }
+    }
+
+    console.log('--- AI Report ---\n');
+    console.log(reportContent);
+
+    // Save report to file
+    const { writeFile } = await import('fs/promises');
+    const reportPath = statePath.replace('.state.json', '.report.md');
+    await writeFile(reportPath, `# Batch Report: ${state.batchName}\n\n${reportContent}`);
+    console.log(`\nReport saved to: ${reportPath}`);
+
+  } catch (err) {
+    console.error('Failed to generate AI report:', err instanceof Error ? err.message : err);
+    console.log('\n--- Fallback Summary ---');
+    console.log(`Batch: ${state.batchName}`);
+    console.log(`Status: ${state.status}`);
+    console.log(`Completed: ${stats.completed}/${stats.total}`);
+    console.log(`Cost: ${formatCost(stats.totalCost)}`);
   }
 }
 

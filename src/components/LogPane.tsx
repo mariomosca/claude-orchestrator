@@ -7,9 +7,10 @@ import { formatCost, formatDuration } from '../utils/format.js';
 interface LogPaneProps {
   tasks: Array<ParsedTask & { state: TaskState }>;
   maxItems?: number;
+  focusedIndex?: number;
 }
 
-export const LogPane: React.FC<LogPaneProps> = ({ tasks, maxItems = 10 }) => {
+export const LogPane: React.FC<LogPaneProps> = ({ tasks, maxItems = 10, focusedIndex }) => {
   const completedTasks = tasks
     .filter(t => t.state?.status === 'completed' || t.state?.status === 'failed' || t.state?.status === 'cancelled')
     .slice(-maxItems);
@@ -23,7 +24,7 @@ export const LogPane: React.FC<LogPaneProps> = ({ tasks, maxItems = 10 }) => {
       {completedTasks.length === 0 ? (
         <Text dimColor>No completed tasks yet</Text>
       ) : (
-        completedTasks.map(task => {
+        completedTasks.map((task, index) => {
           const duration = task.state.startedAt && task.state.completedAt
             ? new Date(task.state.completedAt).getTime() - new Date(task.state.startedAt).getTime()
             : 0;
@@ -36,10 +37,12 @@ export const LogPane: React.FC<LogPaneProps> = ({ tasks, maxItems = 10 }) => {
             : task.state.status === 'failed' ? 'red'
             : 'yellow';
 
+          const isFocused = focusedIndex === index;
+
           return (
             <Box key={task.id}>
-              <Text color={statusColor}>{statusIcon}</Text>
-              <Text> {task.id} </Text>
+              <Text color={statusColor} inverse={isFocused}>{statusIcon}</Text>
+              <Text inverse={isFocused}> {task.id} </Text>
               <Text dimColor>
                 {formatCost(task.state.cost)} | {formatDuration(duration)}
               </Text>

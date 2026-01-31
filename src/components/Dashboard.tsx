@@ -5,6 +5,7 @@ import { RunningPane } from './RunningPane.js';
 import { LogPane } from './LogPane.js';
 import { StatusBar } from './StatusBar.js';
 import { HelpBar } from './HelpBar.js';
+import { DetailsPane } from './DetailsPane.js';
 import type { BatchState, TaskState } from '../types/task.js';
 import type { ParsedTask } from '../engine/parser.js';
 
@@ -32,6 +33,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const { exit } = useApp();
   const [focusedPane, setFocusedPane] = React.useState<'queue' | 'running' | 'log'>('running');
   const [focusedIndex, setFocusedIndex] = React.useState(0);
+  const [selectedTaskId, setSelectedTaskId] = React.useState<string | null>(null);
 
   // Merge tasks with state
   const tasksWithState = tasks.map(task => ({
@@ -40,8 +42,35 @@ export const Dashboard: React.FC<DashboardProps> = ({
   }));
 
   const runningTasks = tasksWithState.filter(t => t.state?.status === 'running');
+  const completedTasks = tasksWithState.filter(t => t.state?.status === 'completed' || t.state?.status === 'failed');
+  const pendingTasks = tasksWithState.filter(t => !t.state || t.state.status === 'pending' || t.state.status === 'blocked');
+
+  // Get task list for current pane
+  const getCurrentPaneTasks = () => {
+    switch (focusedPane) {
+      case 'queue': return pendingTasks;
+      case 'running': return runningTasks;
+      case 'log': return completedTasks;
+      default: return [];
+    }
+  };
+
+  const selectedTask = selectedTaskId
+    ? tasksWithState.find(t => t.id === selectedTaskId)
+    : null;
 
   useInput((input, key) => {
+    // Close details modal with Escape or Enter (when in details view)
+    if (selectedTaskId && (key.escape || key.return)) {
+      setSelectedTaskId(null);
+      return;
+    }
+
+    // If details modal is open, ignore other inputs
+    if (selectedTaskId) {
+      return;
+    }
+
     // Quit
     if (input === 'q' || input === 'Q') {
       onQuit();
@@ -55,6 +84,19 @@ export const Dashboard: React.FC<DashboardProps> = ({
         onResume();
       } else {
         onPause();
+      }
+      return;
+    }
+
+    // Show details with Enter
+    if (key.return) {
+      const paneTasks = getCurrentPaneTasks();
+      if (paneTasks.length > 0) {
+        const taskIndex = Math.min(focusedIndex, paneTasks.length - 1);
+        const task = paneTasks[taskIndex];
+        if (task) {
+          setSelectedTaskId(task.id);
+        }
       }
       return;
     }
@@ -97,6 +139,19 @@ export const Dashboard: React.FC<DashboardProps> = ({
     }
   });
 
+  // If details modal is open, show it instead of the main view
+  if (selectedTask) {
+    return (
+      <Box flexDirection="column" height="100%">
+        <DetailsPane
+          task={selectedTask}
+          onClose={() => setSelectedTaskId(null)}
+        />
+        <StatusBar state={state} isPaused={isPaused} />
+      </Box>
+    );
+  }
+
   return (
     <Box flexDirection="column" height="100%">
       {/* Main content area */}
@@ -107,9 +162,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
         />
         <RunningPane
           tasks={tasksWithState.filter(t => t.state) as Array<ParsedTask & { state: TaskState }>}
+          focusedIndex={focusedPane === 'running' ? focusedIndex : undefined}
         />
         <LogPane
           tasks={tasksWithState.filter(t => t.state) as Array<ParsedTask & { state: TaskState }>}
+          focusedIndex={focusedPane === 'log' ? focusedIndex : undefined}
         />
       </Box>
 

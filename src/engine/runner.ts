@@ -227,8 +227,10 @@ Per escalare, rispondi SOLO con questo JSON:
     try {
       return await this.executeWithSDK(task, prompt, existingSessionId);
     } catch (sdkError) {
-      // Fallback to subprocess
-      console.warn('Claude SDK not available, falling back to subprocess');
+      // Log the actual error for debugging
+      const errorMsg = sdkError instanceof Error ? sdkError.message : String(sdkError);
+      console.warn(`Claude SDK error: ${errorMsg}`);
+      console.warn('Falling back to subprocess...');
       return await this.executeWithSubprocess(task, prompt);
     }
   }
@@ -258,7 +260,7 @@ Per escalare, rispondi SOLO con questo JSON:
         maxBudgetUsd: task.budget,
         abortController: this.abortController,
         includePartialMessages: true,
-        model: task.model === 'haiku' ? 'claude-haiku-3-5' : 'claude-sonnet-4-5'
+        model: task.model  // SDK accepts 'haiku', 'sonnet', 'opus' as aliases
       }
     });
 

@@ -7,9 +7,10 @@ import { formatCost, formatDuration } from '../utils/format.js';
 
 interface RunningPaneProps {
   tasks: Array<ParsedTask & { state: TaskState }>;
+  focusedIndex?: number;
 }
 
-export const RunningPane: React.FC<RunningPaneProps> = ({ tasks }) => {
+export const RunningPane: React.FC<RunningPaneProps> = ({ tasks, focusedIndex }) => {
   const runningTasks = tasks.filter(t => t.state?.status === 'running');
 
   return (
@@ -21,15 +22,16 @@ export const RunningPane: React.FC<RunningPaneProps> = ({ tasks }) => {
       {runningTasks.length === 0 ? (
         <Text dimColor>No tasks running</Text>
       ) : (
-        runningTasks.map(task => {
+        runningTasks.map((task, index) => {
           const elapsed = task.state.startedAt
             ? Date.now() - new Date(task.state.startedAt).getTime()
             : 0;
+          const isFocused = focusedIndex === index;
 
           return (
             <Box key={task.id} flexDirection="column" marginBottom={1}>
               <Box>
-                <Text color="green">
+                <Text color="green" inverse={isFocused}>
                   <Spinner type="dots" /> {task.id}
                 </Text>
               </Box>

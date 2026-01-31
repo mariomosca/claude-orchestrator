@@ -1,46 +1,29 @@
-name: Test Batch
+name: Test Batch - Project Analysis
 maxConcurrent: 2
-defaultBudget: 1.0
+defaultBudget: 0.50
 
 globalInstructions: |
-  Test run - use mock responses only.
+  Questo è un test dell'orchestrator.
+  Rispondi in modo conciso, massimo 2-3 frasi.
+  Il tuo working directory corrente è già impostato al progetto. Usa path relativi o Bash ls per esplorare.
 
 tasks:
-  - id: task-1
-    project: TestProject
-    cwd: ~/Desktop/work-hub
-    prompt: "Echo 'Hello from task 1'"
+  - id: analyze-orchestrator
+    project: claude-orchestrator
+    cwd: ~/Desktop/Projects/03-Experiments/claude-orchestrator
+    prompt: "Leggi il file package.json nel cwd corrente e dimmi nome e versione del progetto. Solo quello, niente altro."
     model: haiku
+    budget: 0.20
     tools:
+      - Read
       - Bash
 
-  - id: task-2
-    project: TestProject
+  - id: analyze-workhub
+    project: work-hub
     cwd: ~/Desktop/work-hub
-    prompt: "Echo 'Hello from task 2'"
+    prompt: "Usa Glob per elencare i file *.md nella root directory del cwd. Solo i nomi, niente contenuto."
     model: haiku
-    dependsOn:
-      - task-1
+    budget: 0.20
     tools:
-      - Bash
-
-  - id: task-3
-    project: TestProject
-    cwd: ~/Desktop/work-hub
-    prompt: "Echo 'Hello from task 3 - parallel with task-2'"
-    model: haiku
-    dependsOn:
-      - task-1
-    tools:
-      - Bash
-
-  - id: task-final
-    project: TestProject
-    cwd: ~/Desktop/work-hub
-    prompt: "Echo 'All done!'"
-    model: haiku
-    dependsOn:
-      - task-2
-      - task-3
-    tools:
+      - Glob
       - Bash
