@@ -238,3 +238,47 @@ export async function saveTaskResult(
   const filePath = join(logDir, `${taskId}.result.json`);
   await writeFile(filePath, JSON.stringify(result, null, 2), 'utf-8');
 }
+
+/**
+ * Read task log file content
+ */
+export async function readTaskLog(
+  batchId: string,
+  taskId: string,
+  baseDir: string = process.cwd()
+): Promise<string | null> {
+  const filePath = getLogFilePath(batchId, taskId, baseDir);
+
+  if (!existsSync(filePath)) {
+    return null;
+  }
+
+  try {
+    const content = await readFile(filePath, 'utf-8');
+    return content;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Read task result JSON file
+ */
+export async function readTaskResult(
+  batchId: string,
+  taskId: string,
+  baseDir: string = process.cwd()
+): Promise<TaskState | null> {
+  const filePath = join(baseDir, LOGS_DIR, batchId, `${taskId}.result.json`);
+
+  if (!existsSync(filePath)) {
+    return null;
+  }
+
+  try {
+    const content = await readFile(filePath, 'utf-8');
+    return JSON.parse(content) as TaskState;
+  } catch {
+    return null;
+  }
+}

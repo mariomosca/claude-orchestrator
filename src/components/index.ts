@@ -7,4 +7,8 @@ export { HelpBar } from './HelpBar.js';
 export { DetailsPane } from './DetailsPane.js';
 export { EscalationPane } from './EscalationPane.js';
 export { PlanningPane } from './PlanningPane.js';
+export { LogViewerPane } from './LogViewerPane.js';
+export { StatsPane } from './StatsPane.js';
+export { ErrorBoundary, categorizeError, getErrorInfo } from './ErrorBoundary.js';
 export type { TaskPlan } from './PlanningPane.js';
+export type { ErrorCategory } from './ErrorBoundary.js';

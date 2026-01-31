@@ -754,20 +754,24 @@ npx claude-orchestrator status state/2026-01-31-sprint.state.json
 - [x] Visual highlight pane attivo (double border, inverse title)
 - [x] HelpBar con [Tab] Switch Pane
 
-### v0.3 - Plan Mode ⏳ IN PROGRESS
-- [ ] PlanningPane TUI component (mostra task list pre-esecuzione)
-- [ ] AI pre-analysis con Haiku (spiega cosa farà ogni task)
-- [ ] Planning state in App (planning → running → completed)
-- [ ] Approve action ([Enter] o [A] per avviare esecuzione)
-- [ ] Edit task action ([E] per modificare prompt)
-- [ ] Exclude task action ([X] per escludere task)
-- [ ] Task list selection (scegli tra YAML in tasks/)
+### v0.3 - Plan Mode ✅ COMPLETATO (31 Gen 2026)
+- [x] PlanningPane TUI component (mostra task list pre-esecuzione)
+- [x] AI pre-analysis con Haiku (spiega cosa farà ogni task)
+- [x] Planning state in App (planning → running → completed)
+- [x] Approve action ([A] per avviare esecuzione)
+- [x] Toggle task action ([X]/[Space] per includere/escludere task)
+- [x] --skip-plan CLI option per saltare Plan Mode
+- [x] startWithTasks per esecuzione filtrata
 
-### v0.4 - Polish
-- [ ] Log storage + viewer migliorato
-- [ ] Retry failed tasks (R funzionante)
-- [ ] Better error handling
-- [ ] Cost analytics
+### v0.4 - Polish ✅ COMPLETATO (31 Gen 2026)
+- [x] LogViewerPane full-screen con scrolling (tasto L)
+- [x] readTaskLog e readTaskResult in state.ts
+- [x] Retry task focused o primo failed (R corretto)
+- [x] StatsPane con analytics costi (tasto S)
+- [x] StatusBar con avg cost per task
+- [x] ErrorBoundary per crash TUI
+- [x] Error categorization (timeout, budget, network, etc.)
+- [x] DetailsPane con error suggestions
 
 ### v1.0 - Production Ready
 - [ ] Full keyboard navigation

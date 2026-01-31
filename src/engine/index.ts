@@ -24,7 +24,9 @@ export {
   getStateFilePath,
   getLogFilePath,
   appendToLog,
-  saveTaskResult
+  saveTaskResult,
+  readTaskLog,
+  readTaskResult
 } from './state.js';
 
 // Runner

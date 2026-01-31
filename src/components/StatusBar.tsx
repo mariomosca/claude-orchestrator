@@ -17,6 +17,12 @@ export const StatusBar: React.FC<StatusBarProps> = ({ state, isPaused }) => {
 
   const elapsed = Date.now() - new Date(state.startedAt).getTime();
 
+  // Calculate average cost per completed task
+  const completedTasks = tasks.filter(t => t.status === 'completed' && t.cost > 0);
+  const avgCost = completedTasks.length > 0
+    ? state.totalCost / completedTasks.length
+    : 0;
+
   const statusColor = state.status === 'completed' ? 'green'
     : state.status === 'failed' ? 'red'
     : state.status === 'cancelled' ? 'yellow'
@@ -42,8 +48,15 @@ export const StatusBar: React.FC<StatusBarProps> = ({ state, isPaused }) => {
       </Box>
 
       <Box>
-        <Text dimColor>Total: </Text>
+        <Text dimColor>Cost: </Text>
         <Text color="yellow">{formatCost(state.totalCost)}</Text>
+        {avgCost > 0 && (
+          <>
+            <Text dimColor> (avg: </Text>
+            <Text color="yellow">{formatCost(avgCost)}</Text>
+            <Text dimColor>)</Text>
+          </>
+        )}
         <Text dimColor> | </Text>
         <Text>{formatDuration(elapsed)}</Text>
       </Box>

@@ -3,6 +3,7 @@ import { Box, Text } from 'ink';
 import type { TaskState } from '../types/task.js';
 import type { ParsedTask } from '../engine/parser.js';
 import { formatCost, formatDuration, formatStatus } from '../utils/format.js';
+import { categorizeError, getErrorInfo } from './ErrorBoundary.js';
 
 interface DetailsPaneProps {
   task: ParsedTask & { state?: TaskState };
@@ -83,13 +84,29 @@ export const DetailsPane: React.FC<DetailsPaneProps> = ({ task, onClose }) => {
 
       {/* Error if any */}
       {state?.error && (
-        <Box flexDirection="column" marginTop={1}>
-          <Text color="red" bold>Error:</Text>
-          <Box paddingLeft={1}>
-            <Text color="red">{state.error}</Text>
-          </Box>
-        </Box>
+        <ErrorDisplay error={state.error} />
       )}
+    </Box>
+  );
+};
+
+/**
+ * Error display with categorization and suggestions
+ */
+const ErrorDisplay: React.FC<{ error: string }> = ({ error }) => {
+  const category = categorizeError(error);
+  const info = getErrorInfo(category);
+
+  return (
+    <Box flexDirection="column" marginTop={1} borderStyle="single" borderColor="red" paddingX={1}>
+      <Box>
+        <Text color={info.color as any} bold>{info.label}: </Text>
+        <Text color="red">{error.slice(0, 100)}{error.length > 100 ? '...' : ''}</Text>
+      </Box>
+      <Box marginTop={1}>
+        <Text dimColor>Suggestion: </Text>
+        <Text>{info.suggestion}</Text>
+      </Box>
     </Box>
   );
 };

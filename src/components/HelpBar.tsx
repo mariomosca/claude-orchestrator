@@ -9,6 +9,8 @@ const shortcuts = [
   { key: 'Tab', action: 'Switch Pane' },
   { key: 'Space', action: 'Pause/Resume' },
   { key: 'Enter', action: 'Details' },
+  { key: 'L', action: 'Full Log' },
+  { key: 'S', action: 'Stats' },
   { key: 'R', action: 'Retry' },
   { key: 'C', action: 'Cancel' },
   { key: 'Q', action: 'Quit' },

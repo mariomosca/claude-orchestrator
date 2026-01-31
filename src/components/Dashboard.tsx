@@ -7,6 +7,8 @@ import { StatusBar } from './StatusBar.js';
 import { HelpBar } from './HelpBar.js';
 import { DetailsPane } from './DetailsPane.js';
 import { EscalationPane } from './EscalationPane.js';
+import { LogViewerPane } from './LogViewerPane.js';
+import { StatsPane } from './StatsPane.js';
 import type { BatchState, TaskState } from '../types/task.js';
 import type { ParsedTask } from '../engine/parser.js';
 import type { EscalationRequest, EscalationResponse } from '../engine/runner.js';
@@ -40,6 +42,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [focusedPane, setFocusedPane] = React.useState<'queue' | 'running' | 'log'>('running');
   const [focusedIndex, setFocusedIndex] = React.useState(0);
   const [selectedTaskId, setSelectedTaskId] = React.useState<string | null>(null);
+  const [logViewerTaskId, setLogViewerTaskId] = React.useState<string | null>(null);
+  const [showStats, setShowStats] = React.useState(false);
 
   // Merge tasks with state
   const tasksWithState = tasks.map(task => ({
@@ -66,6 +70,28 @@ export const Dashboard: React.FC<DashboardProps> = ({
     : null;
 
   useInput((input, key) => {
+    // Close stats pane
+    if (showStats && (key.escape || key.return || input === 's' || input === 'S')) {
+      setShowStats(false);
+      return;
+    }
+
+    // If stats pane is open, ignore other inputs
+    if (showStats) {
+      return;
+    }
+
+    // Close log viewer with Escape or Enter
+    if (logViewerTaskId && (key.escape || key.return)) {
+      setLogViewerTaskId(null);
+      return;
+    }
+
+    // If log viewer is open, handle its navigation
+    if (logViewerTaskId) {
+      return;
+    }
+
     // Close details modal with Escape or Enter (when in details view)
     if (selectedTaskId && (key.escape || key.return)) {
       setSelectedTaskId(null);
@@ -116,12 +142,42 @@ export const Dashboard: React.FC<DashboardProps> = ({
       return;
     }
 
-    // Retry failed task
+    // Retry failed task - use selected task if failed, otherwise first failed in current pane
     if (input === 'r' || input === 'R') {
+      const paneTasks = getCurrentPaneTasks();
+      const taskIndex = Math.min(focusedIndex, paneTasks.length - 1);
+      const focusedTask = paneTasks[taskIndex];
+
+      // If focused task is failed, retry it
+      if (focusedTask?.state?.status === 'failed') {
+        onRetry(focusedTask.id);
+        return;
+      }
+
+      // Otherwise retry first failed task in any pane
       const failedTasks = tasksWithState.filter(t => t.state?.status === 'failed');
       if (failedTasks.length > 0) {
         onRetry(failedTasks[0].id);
       }
+      return;
+    }
+
+    // Open log viewer for current task
+    if (input === 'l' || input === 'L') {
+      const paneTasks = getCurrentPaneTasks();
+      if (paneTasks.length > 0) {
+        const taskIndex = Math.min(focusedIndex, paneTasks.length - 1);
+        const task = paneTasks[taskIndex];
+        if (task) {
+          setLogViewerTaskId(task.id);
+        }
+      }
+      return;
+    }
+
+    // Open cost/stats summary
+    if (input === 's' || input === 'S') {
+      setShowStats(true);
       return;
     }
 
@@ -154,6 +210,38 @@ export const Dashboard: React.FC<DashboardProps> = ({
           onRespond={onEscalationResponse}
         />
         <StatusBar state={state} isPaused={isPaused} />
+      </Box>
+    );
+  }
+
+  // If stats pane is open, show it full screen
+  if (showStats) {
+    return (
+      <Box flexDirection="column" height="100%">
+        <StatsPane
+          tasks={tasks}
+          state={state}
+          onClose={() => setShowStats(false)}
+        />
+        <StatusBar state={state} isPaused={isPaused} />
+      </Box>
+    );
+  }
+
+  // Get task for log viewer
+  const logViewerTask = logViewerTaskId
+    ? tasksWithState.find(t => t.id === logViewerTaskId)
+    : null;
+
+  // If log viewer is open, show it full screen
+  if (logViewerTask) {
+    return (
+      <Box flexDirection="column" height="100%">
+        <LogViewerPane
+          task={logViewerTask}
+          batchId={state.batchId}
+          onClose={() => setLogViewerTaskId(null)}
+        />
       </Box>
     );
   }

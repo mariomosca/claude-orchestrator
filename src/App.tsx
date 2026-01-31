@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { render, Box, Text, useApp } from 'ink';
 import { Dashboard } from './components/Dashboard.js';
 import { PlanningPane, type TaskPlan } from './components/PlanningPane.js';
+import { ErrorBoundary } from './components/ErrorBoundary.js';
 import { QueueManager } from './engine/queue.js';
 import { analyzeTask } from './engine/analyzer.js';
 import { getOrCreateProjectContext } from './engine/context.js';
@@ -230,7 +231,9 @@ export function renderApp(
   options: RenderOptions = {}
 ) {
   const { unmount, waitUntilExit } = render(
-    <App manager={manager} batch={batch} skipPlanning={options.skipPlanning} />
+    <ErrorBoundary>
+      <App manager={manager} batch={batch} skipPlanning={options.skipPlanning} />
+    </ErrorBoundary>
   );
 
   return { unmount, waitUntilExit };
